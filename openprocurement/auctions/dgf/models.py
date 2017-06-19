@@ -48,6 +48,8 @@ DGF_PLATFORM_LEGAL_DETAILS = {
 }
 DGF_PLATFORM_LEGAL_DETAILS_FROM = datetime(2016, 11, 25, tzinfo=TZ)
 
+CLASSIFICATION_PRECISELY_FROM = datetime(2017, 6, 19, tzinfo=TZ)
+
 CAV_CODES = read_json('cav.json')
 CPVS_CODES = read_json('cpvs.json')
 
@@ -69,7 +71,7 @@ class CPVCAVClassification(Classification):
             raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(CPV_CODES)))
         elif data.get('scheme') == u'CAV' and code not in CAV_CODES:
             raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(CAV_CODES)))
-        if code.find("00000-") > 0:
+        if code.find("00000-") > 0 and (data.get('revisions')[0].date if data.get('revisions') else get_now()) > CLASSIFICATION_PRECISELY_FROM:
             raise ValidationError('At least {} classification class (XXXX0000-Y) should be specified more precisely'.format(data.get('scheme')))
 
 
